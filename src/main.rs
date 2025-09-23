@@ -16,8 +16,6 @@ mod middleware;
 mod routes;
 
 use crate::config::Config;
-use crate::middleware::anti_kiddie::{anti_kiddie_middleware, cleanup_old_entries};
-use crate::middleware::cache::{cache_middleware, cleanup_cache_stats, warm_cache};
 use crate::middleware::logging::setup_middleware;
 use axum::{Router, middleware::from_fn};
 use db::db::DatabaseManager;
@@ -35,21 +33,8 @@ async fn main() {
         .await
         .expect("Failed to connect to database");
 
-    // Démarrer les tâches de nettoyage
-    tokio::spawn(cleanup_old_entries());
-    info!("🛡️ Anti-kiddie cleanup task started");
-
-    tokio::spawn(cleanup_cache_stats());
-    info!("💾 Cache stats cleanup task started");
-
-    // Pré-chauffer le cache
-    tokio::spawn(warm_cache());
-    info!("🔥 Cache warming task started");
-
     let app = Router::new().merge(routes::create_router(db)).layer(
         ServiceBuilder::new()
-            .layer(from_fn(cache_middleware)) // Cache en premier (plus proche de la réponse)
-            .layer(from_fn(anti_kiddie_middleware)) // Sécurité après cache
             .layer(CorsLayer::permissive()),
     );
 

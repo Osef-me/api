@@ -5,7 +5,7 @@
 use crate::handlers;
 use axum::{
     Router,
-    routing::{get, post},
+    routing::{post},
 };
 use db::db::DatabaseManager;
 
