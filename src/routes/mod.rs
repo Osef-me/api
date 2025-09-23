@@ -19,7 +19,7 @@ use db::db::DatabaseManager;
 pub mod beatmap;
 pub mod help;
 pub mod docs;
-//pub mod pending_beatmap;
+pub mod pending_beatmap;
 //pub mod scores;
 //pub mod weekly;
 
@@ -30,7 +30,7 @@ pub fn create_router(db: DatabaseManager) -> Router {
         .nest("/api", beatmap::router(db.clone()))
         .nest("/api", help::router())   
         .merge(docs::router(db.clone()))
-        //.nest("/api", pending_beatmap::router(db.clone()))
+        .nest("/api", pending_beatmap::router(db.clone()))
         //.nest("/api", scores::router(db.clone()))
         //.nest("/api", weekly::router(db.clone()))
         // Add your other route modules here

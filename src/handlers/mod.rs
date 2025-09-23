@@ -10,5 +10,3 @@
 pub mod beatmap;
 pub mod help;
 pub mod pending_beatmap;
-pub mod scores;
-pub mod weekly;

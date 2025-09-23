@@ -24,7 +24,7 @@ pub async fn handler(
     let batch: Vec<PendingBeatmapRow> = payload
         .checksums
         .into_iter()
-        .take(50)
+        .take(500)
         .map(|h| PendingBeatmapRow {
             id: 1,
             osu_hash: h,
