@@ -17,7 +17,7 @@ mod routes;
 
 use crate::config::Config;
 use crate::middleware::logging::setup_middleware;
-use axum::{Router, middleware::from_fn};
+use axum::{Router};
 use db::db::DatabaseManager;
 use std::net::SocketAddr;
 use tower::ServiceBuilder;
@@ -44,7 +44,9 @@ async fn main() {
         .server_address()
         .parse()
         .expect("Invalid server address");
+    
     info!("listening on {}", addr);
+    
     axum::serve(
         tokio::net::TcpListener::bind(addr).await.unwrap(),
         app.into_make_service_with_connect_info::<SocketAddr>(),
