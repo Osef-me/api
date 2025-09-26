@@ -15,7 +15,9 @@ use utoipa::OpenApi;
 #[openapi(paths(
     crate::handlers::beatmap::batch::checksums::handler,
     crate::handlers::pending_beatmap::get::status_by_osu_id::handler,
-    crate::handlers::beatmap::get::list::handler
+    crate::handlers::beatmap::get::list::handler,
+    crate::handlers::beatmap::get::find_one::handler,
+    crate::handlers::beatmap::get::rate::handler
 ))]
 struct ApiDoc;
 
