@@ -7,6 +7,6 @@
 // pub mod user;
 // pub mod product;
 
-pub mod beatmap;
+pub mod beatmapsets;
 pub mod help;
 pub mod pending_beatmap;

@@ -9,7 +9,7 @@ use serde::Deserialize;
 /// GET /api/beatmaps
 #[utoipa::path(
     get,
-    path = "/api/beatmaps",
+    path = "/api/beatmapsets",
     params(
         ("page" = Option<usize>, Query, description = "Page index (0-based)", example = 0),
         ("per_page" = Option<usize>, Query, description = "Items per page", example = 20),

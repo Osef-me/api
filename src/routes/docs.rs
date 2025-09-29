@@ -13,9 +13,11 @@ use utoipa_swagger_ui::{SwaggerUi};
 use utoipa::OpenApi;
 #[derive(OpenApi)]
 #[openapi(paths(
-    crate::handlers::beatmap::batch::checksums::handler,
+    crate::handlers::beatmapsets::batch::checksums::handler,
     crate::handlers::pending_beatmap::get::status_by_osu_id::handler,
-    crate::handlers::beatmap::get::list::handler
+    crate::handlers::beatmapsets::get::list::handler,
+    crate::handlers::beatmapsets::get::by_osu_id::handler,
+    crate::handlers::beatmapsets::rate::handler
 ))]
 struct ApiDoc;
 
