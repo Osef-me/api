@@ -1,18 +1,16 @@
 use axum::{extract::{State, Query}, Json, http::StatusCode};
 use db::db::DatabaseManager;
-use dto::common::{PaginatedResponse, Pagination};
+use dto::common::ApiResponse;
 use dto::filters::{Filters, RatingFilter, SkillsetFilter, BeatmapFilter, BeatmapTechnicalFilter, RatesFilter};
 use dto::models::beatmaps::short::types::Beatmapset;
-use dto::models::beatmaps::short::query::{find_all_with_filters, count_with_filters};
+use dto::models::beatmaps::short::query::find_random_with_filters;
 use serde::Deserialize;
 
-/// GET /api/beatmaps
+/// GET /api/beatmapsets/random - Returns 9 random beatmapsets with optional filters
 #[utoipa::path(
     get,
-    path = "/api/beatmapsets",
+    path = "/api/beatmapsets/random",
     params(
-        ("page" = Option<usize>, Query, description = "Page index (0-based)", example = 0),
-        ("per_page" = Option<usize>, Query, description = "Items per page", example = 20),
         ("rating[rating_type]" = Option<String>, Query, description = "Rating type filter", example = "overall"),
         ("rating[rating_min]" = Option<f64>, Query, description = "Min rating", example = 6.5),
         ("rating[rating_max]" = Option<f64>, Query, description = "Max rating", example = 9.5),
@@ -31,7 +29,7 @@ use serde::Deserialize;
         ("rates[drain_time_max]" = Option<i32>, Query, description = "Max drain time (seconds)", example = 300)
     ),
     responses(
-        (status = 200, description = "List beatmaps", body = dto::common::PaginatedResponse<dto::models::beatmaps::short::types::Beatmapset>),
+        (status = 200, description = "Random beatmapsets", body = dto::common::ApiResponse<Vec<dto::models::beatmaps::short::types::Beatmapset>>),
         (status = 500, description = "Internal error")
     ),
     tag = "Beatmaps"
@@ -40,27 +38,18 @@ use serde::Deserialize;
 pub async fn handler(
     State(db): State<DatabaseManager>,
     Query(q): Query<BeatmapListQuery>,
-) -> Result<Json<PaginatedResponse<Beatmapset>>, StatusCode> {
+) -> Result<Json<ApiResponse<Vec<Beatmapset>>>, StatusCode> {
     let filters = q.into_filters();
     let pool = db.get_pool();
-    let page = filters.page.unwrap_or(0) as u32;
-    let per_page = filters.per_page.unwrap_or(20) as u32;
-    let total = match count_with_filters(pool, &filters).await {
-        Ok(t) => t as u64,
-        Err(err) => {
-            tracing::error!(error = %err, "failed to count beatmaps list");
-            0
-        }
-    };
-    match find_all_with_filters(pool, filters).await {
-        Ok(list) => Ok(Json(PaginatedResponse {
+
+    match find_random_with_filters(pool, filters).await {
+        Ok(list) => Ok(Json(ApiResponse {
             message: "ok".to_string(),
             status: "200".to_string(),
-            data: list,
-            pagination: Pagination { page, per_page, total },
+            data: Some(list),
         })),
         Err(err) => {
-            tracing::error!(error = %err, "failed to fetch beatmaps list");
+            tracing::error!(error = %err, "failed to fetch random beatmaps");
             Err(StatusCode::INTERNAL_SERVER_ERROR)
         }
     }
@@ -68,10 +57,6 @@ pub async fn handler(
 
 #[derive(Debug, Deserialize)]
 pub struct BeatmapListQuery {
-    // Pagination
-    pub page: Option<usize>,
-    pub per_page: Option<usize>,
-
     // Rating
     #[serde(alias = "rating[rating_type]", alias = "rating.rating_type")]
     pub rating_type: Option<String>,
@@ -137,15 +122,14 @@ impl BeatmapListQuery {
             Some(RatesFilter { drain_time_min: self.drain_time_min, drain_time_max: self.drain_time_max })
         } else { None };
 
-        Filters { 
-            rating, 
-            skillset, 
-            beatmap, 
-            beatmap_technical, 
-            rates, 
-            page: self.page, 
-            per_page: self.per_page 
+        Filters {
+            rating,
+            skillset,
+            beatmap,
+            beatmap_technical,
+            rates,
+            page: None,
+            per_page: None
         }
     }
 }
-

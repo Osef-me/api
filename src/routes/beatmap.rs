@@ -24,6 +24,10 @@ pub fn router(db: DatabaseManager) -> Router<DatabaseManager> {
             get(handlers::beatmapsets::get::list::handler),
         )
         .route(
+            "/beatmapsets/random",
+            get(handlers::beatmapsets::get::list_random::handler),
+        )
+        .route(
             "/beatmapsets/{osu_id}",
             get(handlers::beatmapsets::get::by_osu_id::handler),
         )
