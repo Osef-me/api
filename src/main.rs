@@ -17,7 +17,7 @@ mod routes;
 
 use crate::config::Config;
 use crate::middleware::logging::setup_middleware;
-use axum::{Router};
+use axum::Router;
 use db::db::DatabaseManager;
 use std::net::SocketAddr;
 use tower::ServiceBuilder;
@@ -33,10 +33,9 @@ async fn main() {
         .await
         .expect("Failed to connect to database");
 
-    let app = Router::new().merge(routes::create_router(db)).layer(
-        ServiceBuilder::new()
-            .layer(CorsLayer::permissive()),
-    );
+    let app = Router::new()
+        .merge(routes::create_router(db))
+        .layer(ServiceBuilder::new().layer(CorsLayer::permissive()));
 
     let app = setup_middleware(app);
 
@@ -44,9 +43,9 @@ async fn main() {
         .server_address()
         .parse()
         .expect("Invalid server address");
-    
+
     info!("listening on {}", addr);
-    
+
     axum::serve(
         tokio::net::TcpListener::bind(addr).await.unwrap(),
         app.into_make_service_with_connect_info::<SocketAddr>(),

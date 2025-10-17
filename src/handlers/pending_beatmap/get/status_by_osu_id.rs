@@ -27,7 +27,8 @@ pub async fn handler(
 
     let Some(status) = find_status_by_osu_id(pool, id)
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)? else {
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+    else {
         return Err(StatusCode::NOT_FOUND);
     };
 

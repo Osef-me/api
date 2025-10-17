@@ -17,18 +17,17 @@ use db::db::DatabaseManager;
 
 // Re-export all route modules here
 pub mod beatmap;
-pub mod help;
 pub mod docs;
+pub mod help;
 pub mod pending_beatmap;
 //pub mod scores;
 //pub mod weekly;
-
 
 pub fn create_router(db: DatabaseManager) -> Router {
     Router::new()
         // Routes API
         .nest("/api", beatmap::router(db.clone()))
-        .nest("/api", help::router())   
+        .nest("/api", help::router())
         .merge(docs::router(db.clone()))
         .nest("/api", pending_beatmap::router(db.clone()))
         //.nest("/api", scores::router(db.clone()))

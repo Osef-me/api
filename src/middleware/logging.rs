@@ -1,11 +1,11 @@
+use axum::extract::MatchedPath;
+use axum::http::header;
 use axum::{
     body::Body,
     http::Request,
     middleware::{self, Next},
     response::Response,
 };
-use axum::extract::MatchedPath;
-use axum::http::header;
 use std::time::Instant;
 use tracing::{error, info, warn};
 

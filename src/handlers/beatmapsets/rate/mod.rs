@@ -1,7 +1,10 @@
-use axum::{extract::{State, Path}, Json, http::StatusCode};
+use axum::{
+    Json,
+    extract::{Path, State},
+    http::StatusCode,
+};
 use db::db::DatabaseManager;
 use dto::models::rate::find_rate_by_beatmap_osu_id_and_centirate;
-use serde::Deserialize;
 
 /// GET /api/beatmaps/{beatmap_osu_id}/rates/{centirate}
 #[utoipa::path(

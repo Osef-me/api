@@ -1,9 +1,15 @@
-use axum::{extract::{State, Query}, Json, http::StatusCode};
+use axum::{
+    Json,
+    extract::{Query, State},
+    http::StatusCode,
+};
 use db::db::DatabaseManager;
 use dto::common::ApiResponse;
-use dto::filters::{Filters, RatingFilter, SkillsetFilter, BeatmapFilter, BeatmapTechnicalFilter, RatesFilter};
-use dto::models::beatmaps::short::types::Beatmapset;
+use dto::filters::{
+    BeatmapFilter, BeatmapTechnicalFilter, Filters, RatesFilter, RatingFilter, SkillsetFilter,
+};
 use dto::models::beatmaps::short::query::find_random_with_filters;
+use dto::models::beatmaps::short::types::Beatmapset;
 use serde::Deserialize;
 
 /// GET /api/beatmapsets/random - Returns 9 random beatmapsets with optional filters
@@ -86,11 +92,20 @@ pub struct BeatmapListQuery {
     pub bpm_max: Option<f64>,
 
     // Beatmap Technical
-    #[serde(alias = "beatmap_technical[od_min]", alias = "beatmap_technical.od_min")]
+    #[serde(
+        alias = "beatmap_technical[od_min]",
+        alias = "beatmap_technical.od_min"
+    )]
     pub od_min: Option<f64>,
-    #[serde(alias = "beatmap_technical[od_max]", alias = "beatmap_technical.od_max")]
+    #[serde(
+        alias = "beatmap_technical[od_max]",
+        alias = "beatmap_technical.od_max"
+    )]
     pub od_max: Option<f64>,
-    #[serde(alias = "beatmap_technical[status]", alias = "beatmap_technical.status")]
+    #[serde(
+        alias = "beatmap_technical[status]",
+        alias = "beatmap_technical.status"
+    )]
     pub status: Option<String>,
 
     // Rates
@@ -102,25 +117,67 @@ pub struct BeatmapListQuery {
 
 impl BeatmapListQuery {
     fn into_filters(self) -> Filters {
-        let rating = if self.rating_type.is_some() || self.rating_min.is_some() || self.rating_max.is_some() {
-            Some(RatingFilter { rating_type: self.rating_type, rating_min: self.rating_min, rating_max: self.rating_max })
-        } else { None };
+        let rating =
+            if self.rating_type.is_some() || self.rating_min.is_some() || self.rating_max.is_some()
+            {
+                Some(RatingFilter {
+                    rating_type: self.rating_type,
+                    rating_min: self.rating_min,
+                    rating_max: self.rating_max,
+                })
+            } else {
+                None
+            };
 
-        let skillset = if self.pattern_type.is_some() || self.pattern_min.is_some() || self.pattern_max.is_some() {
-            Some(SkillsetFilter { pattern_type: self.pattern_type, pattern_min: self.pattern_min, pattern_max: self.pattern_max })
-        } else { None };
+        let skillset = if self.pattern_type.is_some()
+            || self.pattern_min.is_some()
+            || self.pattern_max.is_some()
+        {
+            Some(SkillsetFilter {
+                pattern_type: self.pattern_type,
+                pattern_min: self.pattern_min,
+                pattern_max: self.pattern_max,
+            })
+        } else {
+            None
+        };
 
-        let beatmap = if self.search_term.is_some() || self.total_time_min.is_some() || self.total_time_max.is_some() || self.bpm_min.is_some() || self.bpm_max.is_some() {
-            Some(BeatmapFilter { search_term: self.search_term, total_time_min: self.total_time_min, total_time_max: self.total_time_max, bpm_min: self.bpm_min, bpm_max: self.bpm_max })
-        } else { None };
+        let beatmap = if self.search_term.is_some()
+            || self.total_time_min.is_some()
+            || self.total_time_max.is_some()
+            || self.bpm_min.is_some()
+            || self.bpm_max.is_some()
+        {
+            Some(BeatmapFilter {
+                search_term: self.search_term,
+                total_time_min: self.total_time_min,
+                total_time_max: self.total_time_max,
+                bpm_min: self.bpm_min,
+                bpm_max: self.bpm_max,
+            })
+        } else {
+            None
+        };
 
-        let beatmap_technical = if self.od_min.is_some() || self.od_max.is_some() || self.status.is_some() {
-            Some(BeatmapTechnicalFilter { od_min: self.od_min, od_max: self.od_max, status: self.status })
-        } else { None };
+        let beatmap_technical =
+            if self.od_min.is_some() || self.od_max.is_some() || self.status.is_some() {
+                Some(BeatmapTechnicalFilter {
+                    od_min: self.od_min,
+                    od_max: self.od_max,
+                    status: self.status,
+                })
+            } else {
+                None
+            };
 
         let rates = if self.drain_time_min.is_some() || self.drain_time_max.is_some() {
-            Some(RatesFilter { drain_time_min: self.drain_time_min, drain_time_max: self.drain_time_max })
-        } else { None };
+            Some(RatesFilter {
+                drain_time_min: self.drain_time_min,
+                drain_time_max: self.drain_time_max,
+            })
+        } else {
+            None
+        };
 
         Filters {
             rating,
@@ -129,7 +186,7 @@ impl BeatmapListQuery {
             beatmap_technical,
             rates,
             page: None,
-            per_page: None
+            per_page: None,
         }
     }
 }

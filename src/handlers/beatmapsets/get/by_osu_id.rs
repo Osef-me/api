@@ -1,4 +1,8 @@
-use axum::{extract::{State, Path, Query}, Json, http::StatusCode};
+use axum::{
+    Json,
+    extract::{Path, Query, State},
+    http::StatusCode,
+};
 use db::db::DatabaseManager;
 use dto::models::beatmaps::simple::query::find_by_osu_id::find_by_osu_id;
 use serde::Deserialize;
